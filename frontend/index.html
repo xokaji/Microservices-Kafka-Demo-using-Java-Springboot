@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kafka Flow Demo UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="blob blob-a" aria-hidden="true"></div>
+  <div class="blob blob-b" aria-hidden="true"></div>
+
+  <main class="layout">
+    <header class="hero">
+      <p class="eyebrow">EVENT-DRIVEN DEMO</p>
+      <h1>Order to Payment to Notification</h1>
+      <p class="subtitle">
+        This dashboard sends an order to <strong>order-service</strong>, then visualizes the Kafka process
+        through <strong>order-created</strong> and <strong>payment-success</strong> topics.
+      </p>
+    </header>
+
+    <section class="panel order-panel">
+      <h2>Place Test Order</h2>
+      <form id="order-form" class="order-form">
+        <label>
+          Order ID
+          <input id="orderId" name="orderId" type="text" placeholder="2001" required />
+        </label>
+
+        <label>
+          Product
+          <input id="product" name="product" type="text" placeholder="Phone" required />
+        </label>
+
+        <label>
+          Quantity
+          <input id="quantity" name="quantity" type="number" min="1" value="1" required />
+        </label>
+
+        <button id="submit-btn" type="submit">Send Order Event</button>
+      </form>
+
+      <div class="actions">
+        <button id="refresh-btn" type="button" class="secondary">Refresh Orders</button>
+      </div>
+
+      <p id="api-status" class="api-status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel flow-panel">
+      <div class="flow-header">
+        <h2>Live Process Flow</h2>
+        <span class="topic-pill">Topic: order-created</span>
+        <span class="topic-pill">Topic: payment-success</span>
+      </div>
+
+      <div class="flow-track" id="flow-track">
+        <article class="service-card" id="step-order">
+          <h3>1. Order Service</h3>
+          <p>Accepts REST order and publishes to Kafka.</p>
+        </article>
+
+        <div class="arrow" id="arrow-1" aria-hidden="true">&#10132;</div>
+
+        <article class="service-card" id="step-payment">
+          <h3>2. Payment Service</h3>
+          <p>Consumes order-created and publishes payment-success.</p>
+        </article>
+
+        <div class="arrow" id="arrow-2" aria-hidden="true">&#10132;</div>
+
+        <article class="service-card" id="step-notification">
+          <h3>3. Notification Service</h3>
+          <p>Consumes payment-success and sends confirmation.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel logs-panel">
+      <div class="logs-header">
+        <h2>Event Log</h2>
+        <button id="clear-log" type="button" class="secondary">Clear</button>
+      </div>
+      <ul id="log-list" class="log-list"></ul>
+    </section>
+
+    <section class="panel architecture-panel">
+      <h2>Architecture Snapshot</h2>
+      <div class="arch-grid">
+        <div class="arch-node">Client</div>
+        <div class="arch-node">Order API (8081)</div>
+        <div class="arch-node">Kafka (9092)</div>
+        <div class="arch-node">Payment (8082)</div>
+        <div class="arch-node">Notification (8083)</div>
+      </div>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="table-head">
+        <h2>Orders In Session</h2>
+        <small>Loaded from GET /orders</small>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Product</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+          <tbody id="orders-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
